@@ -1,7 +1,4 @@
 # A simple implementation of blockchain in golang
----
-
-# Usage
 
 ## Starting a node
 
