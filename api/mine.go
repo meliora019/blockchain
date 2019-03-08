@@ -33,6 +33,8 @@ func Mine(res http.ResponseWriter, req *http.Request) {
 
   var transaction blchain.Transaction
 
+  // We have to get a reward for found confirmation.
+  // Sender "0" means that the node earned coin.
   transaction.Sender = "0"
   transaction.Recipient = node
   transaction.Amount = 1

@@ -12,12 +12,12 @@ func main() {
   flag.Parse()
 
   http.HandleFunc("/mine", api.Mine) //GET
-	http.HandleFunc("/transactions", api.Transactions) //POST
-	http.HandleFunc("/chain", api.Chain) //GET
+  http.HandleFunc("/transactions", api.Transactions) //POST
+  http.HandleFunc("/chain", api.Chain) //GET
   http.HandleFunc("/nodes", api.Nodes) //POST
   http.HandleFunc("/consensus", api.Consensus) //GET
 
-	err := http.ListenAndServe(":" + *port, nil)
+  err := http.ListenAndServe(":" + *port, nil)
   if err != nil {
     panic(err)
   }
