@@ -4,7 +4,7 @@
 
 You can start as many nodes as you want with the following command
 
-`go run -port=<port-number>`
+`go run main.go -port=<port-number>`
 
 ### Show the Blockchain of a node
 
