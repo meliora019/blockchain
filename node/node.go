@@ -1,37 +1,37 @@
 package node
 
 import (
-  "crypto/md5"
+	"crypto/md5"
 	"encoding/hex"
+	"fmt"
+	"math/rand"
+	"strconv"
 	"time"
-  "math/rand"
-  "strconv"
-  "fmt"
 )
 
 var node string
 
 func Get() string {
-  return node
+	return node
 }
 
 func init() {
-  node = nodeIdentifier()
+	node = nodeIdentifier()
 
-  fmt.Println("Node:", node)
+	fmt.Println("Node:", node)
 }
 
 func nodeIdentifier() string {
-  rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 
-  randInt := rand.Intn(10000)
-  randIntToString := strconv.Itoa(randInt)
+	randInt := rand.Intn(10000)
+	randIntToString := strconv.Itoa(randInt)
 
-  currTime := time.Now().UTC()
+	currTime := time.Now().UTC()
 	str := []byte(currTime.String() + randIntToString)
 
 	sum := md5.Sum(str)
 	hash := hex.EncodeToString(sum[:])
 
-  return hash
+	return hash
 }

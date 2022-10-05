@@ -1,131 +1,131 @@
 package blockchain
 
 import (
-  "time"
-  "encoding/json"
-  "crypto/sha256"
-  "encoding/hex"
-  "net/url"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"net/url"
+	"time"
 )
 
 type Transaction struct {
-  Sender string
-  Recipient string
-  Amount float64
+	Sender    string
+	Recipient string
+	Amount    float64
 }
 
 type Block struct {
-  Index uint32
-  Timestamp time.Time
-  Transactions []Transaction
-  Proof uint64
-  PreviousHash string
+	Index        uint32
+	Timestamp    time.Time
+	Transactions []Transaction
+	Proof        uint64
+	PreviousHash string
 }
 
 type blockchain struct {
-  chain []Block
-  currentTransactions []Transaction
-  nodes map[string]struct{}
+	chain               []Block
+	currentTransactions []Transaction
+	nodes               map[string]struct{}
 }
 
 var blockchainPointer *blockchain
 
 // constructor
 func New() *blockchain {
-  b := new(blockchain)
+	b := new(blockchain)
 
-  b.nodes = make(map[string]struct{})
-  b.NewBlock("1", 100)
+	b.nodes = make(map[string]struct{})
+	b.NewBlock("1", 100)
 
-  return b
+	return b
 }
 
 func init() {
-  blockchainPointer = New()
+	blockchainPointer = New()
 }
 
 func Get() *blockchain {
-  return blockchainPointer
+	return blockchainPointer
 }
 
 // Getter for chain
 func (b *blockchain) FullChain() []Block {
-  return b.chain
+	return b.chain
 }
 
 // Getter for currentTransactions
 func (b *blockchain) CurrentTransactions() []Transaction {
-  return b.currentTransactions
+	return b.currentTransactions
 }
 
 // Getter for nodes
 func (b *blockchain) Nodes() []string {
-  var nodes []string
+	var nodes []string
 
-  for node := range b.nodes {
-    nodes = append(nodes, node)
-  }
+	for node := range b.nodes {
+		nodes = append(nodes, node)
+	}
 
-  return nodes
+	return nodes
 }
 
 func (b *blockchain) NewBlock(previousHash string, proof uint64) Block {
-  var block Block
+	var block Block
 
-  block.Index = uint32(len(b.chain)) + 1
-  block.Timestamp = time.Now().UTC()
-  block.Transactions = b.currentTransactions
-  block.Proof = proof
-  if (previousHash == "") {
-    i := len(b.chain) - 1
-    block.PreviousHash = Hash(b.chain[i])
-  } else {
-    block.PreviousHash = previousHash
-  }
+	block.Index = uint32(len(b.chain)) + 1
+	block.Timestamp = time.Now().UTC()
+	block.Transactions = b.currentTransactions
+	block.Proof = proof
+	if previousHash == "" {
+		i := len(b.chain) - 1
+		block.PreviousHash = Hash(b.chain[i])
+	} else {
+		block.PreviousHash = previousHash
+	}
 
-  // Empty list of current transactions
-  b.currentTransactions = nil
+	// Empty list of current transactions
+	b.currentTransactions = nil
 
-  b.chain = append(b.chain, block)
-  return block
+	b.chain = append(b.chain, block)
+	return block
 }
 
 func (b *blockchain) NewTransaction(transaction Transaction) uint32 {
-  b.currentTransactions = append(b.currentTransactions, transaction)
+	b.currentTransactions = append(b.currentTransactions, transaction)
 
-  lastBlock := b.LastBlock()
+	lastBlock := b.LastBlock()
 
-  return lastBlock.Index + 1
+	return lastBlock.Index + 1
 }
 
 func (b *blockchain) LastBlock() Block {
-  i := len(b.chain) - 1
-  return b.chain[i]
+	i := len(b.chain) - 1
+	return b.chain[i]
 }
 
 func (b *blockchain) RegisterNode(address string) error {
-  parsed, err := url.ParseRequestURI(address)
-  if err != nil {
-    return err
-  }
+	parsed, err := url.ParseRequestURI(address)
+	if err != nil {
+		return err
+	}
 
-  b.nodes[parsed.Host] = struct{}{}
+	b.nodes[parsed.Host] = struct{}{}
 
-  return nil
+	return nil
 }
 
 // Kinda "static" method
 func Hash(block Block) string {
-  blockJson, err := json.Marshal(block)
-  if err != nil {
-    panic(err)
-  }
+	blockJson, err := json.Marshal(block)
+	if err != nil {
+		panic(err)
+	}
 
-  sha256 := sha256.New()
-  sha256.Write([]byte(string(blockJson)))
-  sum := sha256.Sum(nil)
+	sha256 := sha256.New()
+	sha256.Write([]byte(string(blockJson)))
+	sum := sha256.Sum(nil)
 
-  hash := hex.EncodeToString(sum[:])
+	hash := hex.EncodeToString(sum[:])
 
-  return hash
+	return hash
 }
